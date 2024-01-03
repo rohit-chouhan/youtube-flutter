@@ -1,6 +1,6 @@
 name: youtube
-description: A package to stream/download youtube video or thumbnail and more.
-version: 1.0.1
+description: A package to get youtube video information and thumbnail in multiple quality.
+version: 1.0.2
 homepage: https://rohitchouhan.com
 repository: https://github.com/rohit-chouhan/youtube-flutter
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.13.4
+  http: ^1.1.2
 
 dev_dependencies:
   flutter_test:

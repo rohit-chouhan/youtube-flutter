@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Youtube Package Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -38,9 +38,22 @@ class _HomeState extends State<Home> {
       body: Center(
         child: Column(
           children: [
-            Text(Youtube().video('TicGJQqrq2M').title()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').title()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').authorName()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').authorUrl()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').type()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').height()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').width()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').version()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').providerName()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').providerUrl()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').thumbnailHeight()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').thumbnailWidth()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').thumbnail()),
+            Text(Youtube(youtubeId: 'TicGJQqrq2M').html()),
             Image.network(YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').hd()),
-            Image.network(YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').standard()),
+            Image.network(
+                YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').standard()),
             Image.network(YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').hq()),
             Image.network(YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').mq()),
             Image.network(YoutubeThumbnail(youtubeId: 'TicGJQqrq2M').small()),
