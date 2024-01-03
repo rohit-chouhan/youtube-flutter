@@ -48,7 +48,7 @@ To obtain a YouTube thumbnail, use the YouTubeThumbnail class with the video's I
 | `standard()`       | 640x480    |
 | `hq()`             | 480x360    |
 | `mq()`             | 320x180    |
-| `defaults()`       | 120x90     |
+| `small()`       | 120x90     |
 
 #### Example
 
