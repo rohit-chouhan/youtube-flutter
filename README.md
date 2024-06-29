@@ -109,7 +109,7 @@ print('LQ Thumbnail: ${thumbnails.lq}');
 
 ## Example
 
-👉 For a complete example, refer to the [Youtube package documentation](https://pub.dev/packages/youtube-flutter/example).
+👉 For a complete example, refer to the [Youtube package documentation](https://pub.dev/packages/youtube/example).
 
 ## Report bugs or issues
 
