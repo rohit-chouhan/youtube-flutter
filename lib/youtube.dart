@@ -1,124 +1,116 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// Class for returning information about a YouTube video
 class Youtube {
-  late String _id;
-  late String _title;
-  late String _authorName;
-  late String _authorUrl;
-  late String _type;
-  late int _height;
-  late int _width;
-  late String _version;
-  late String _providerName;
-  late String _providerUrl;
-  late int _thumbnailHeight;
-  late int _thumbnailWidth;
-  late String _thumbnailUrl;
-  late String _html;
+  static ChannelDetails _channelDetails =
+      ChannelDetails(name: '', id: '', username: '');
+  static VideoDetails _videoDetails =
+      VideoDetails(title: '', duration: 0, viewCount: 0, defaultThumbnail: '');
+  static Thumbnails _thumbnails = Thumbnails(
+    fullhd: 'https://placehold.co/600x400/F00/FFF?text=Image+Size+Not+Found',
+    hd: 'https://placehold.co/600x400/F00/FFF?text=Image+Size+Not+Found',
+    sd: 'https://placehold.co/600x400/F00/FFF?text=Image+Size+Not+Found',
+    hq: 'https://placehold.co/600x400/F00/FFF?text=Image+Size+Not+Found',
+    lq: 'https://placehold.co/600x400/F00/FFF?text=Image+Size+Not+Found',
+  );
+  static late String _videoId;
 
-  Youtube({required String youtubeId}) {
-    _id = youtubeId;
-    video(_id);
+  static Future<void> config({required String videoId}) async {
+    _videoId = videoId;
+    await callApi();
   }
 
-  Future<void> video(String id) async {
-    var url = Uri.parse(
-        'https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=$id&format=json');
-    http.Response response = await http.get(url);
+  static ChannelDetails get channelDetails => _channelDetails;
+  static VideoDetails get videoDetails => _videoDetails;
+  static Thumbnails get thumbnails => _thumbnails;
+
+  static Future<void> callApi() async {
+    var url = 'https://flutter-youtube.api.rohitchouhan.com/?video=$_videoId';
     try {
+      var response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
-        String data = response.body;
-        if (data == 'Not Found') {
-          throw Exception('Youtube video not exist with provided id.');
-        } else {
-          _title = jsonDecode(data)['title'];
-          _authorName = jsonDecode(data)['author_name'];
-          _authorUrl = jsonDecode(data)['author_url'];
-          _type = jsonDecode(data)['type'];
-          _height = jsonDecode(data)['height'];
-          _width = jsonDecode(data)['width'];
-          _version = jsonDecode(data)['version'];
-          _providerName = jsonDecode(data)['provider_name'];
-          _providerUrl = jsonDecode(data)['provider_url'];
-          _thumbnailHeight = jsonDecode(data)['thumbnail_height'];
-          _thumbnailWidth = jsonDecode(data)['thumbnail_width'];
-          _thumbnailUrl = jsonDecode(data)['thumbnail_url'];
-          _html = jsonDecode(data)['html'];
-        }
+        var jsonResponse = jsonDecode(response.body);
+        _updateDetails(jsonResponse);
       } else {
-        // Handle error case by throwing an exception
-        throw Exception('Request failed with status: ${response.statusCode}');
+        throw HttpException('Failed to load video data');
       }
     } catch (e) {
-      // Handle exception by throwing an exception
-      throw Exception('Error: $e');
+      print('Error fetching video data: $e');
     }
   }
 
-  /// Return title of video
-  title() {
-    return _title;
+  static void _updateDetails(Map<String, dynamic> jsonResponse) {
+    _channelDetails = ChannelDetails(
+      name: jsonResponse['uploader'] ?? '',
+      id: jsonResponse['channel_id'] ?? '',
+      username: jsonResponse['uploader_id'] ?? '',
+    );
+    _videoDetails = VideoDetails(
+      title: jsonResponse['title'] ?? '',
+      duration: jsonResponse['duration'] ?? 0,
+      viewCount: jsonResponse['view_count'] ?? 0,
+      defaultThumbnail: jsonResponse['thumbnail'] ?? '',
+    );
+    _thumbnails = Thumbnails(
+      fullhd: _getUrlByResolution("1920x1080", jsonResponse),
+      hd: _getUrlByResolution("1280x720", jsonResponse),
+      sd: _getUrlByResolution("640x480", jsonResponse),
+      hq: _getUrlByResolution("480x360", jsonResponse),
+      lq: _getUrlByResolution("336x188", jsonResponse),
+    );
   }
 
-  /// Return author name of video
-  authorName() {
-    return _authorName;
+  static String _getUrlByResolution(
+      String resolution, Map<String, dynamic> jsonResponse) {
+    for (var thumbnail in jsonResponse['thumbnails'] as List<dynamic>) {
+      if (thumbnail['resolution'] == resolution) {
+        return thumbnail['url'];
+      }
+    }
+    return jsonResponse['thumbnails'].last['url'] ?? '';
   }
+}
 
-  /// Return author URL of video
-  authorUrl() {
-    return _authorUrl;
-  }
+class ChannelDetails {
+  String name;
+  String id;
+  String username;
 
-  /// Return type of video
-  type() {
-    return _type;
-  }
+  ChannelDetails(
+      {required this.name, required this.id, required this.username});
+}
 
-  /// Return height of video
-  height() {
-    return _height;
-  }
+class VideoDetails {
+  String title;
+  int duration;
+  int viewCount;
+  String defaultThumbnail;
 
-  /// Return width of video
-  width() {
-    return _width;
-  }
+  VideoDetails(
+      {required this.title,
+      this.duration = 0,
+      this.viewCount = 0,
+      this.defaultThumbnail = ''});
+}
 
-  /// Return version of video Youtube
-  version() {
-    return _version;
-  }
+class Thumbnails {
+  String fullhd;
+  String hd;
+  String sd;
+  String hq;
+  String lq;
 
-  /// Return provider name of video
-  providerName() {
-    return _providerName;
-  }
+  Thumbnails(
+      {required this.fullhd,
+      required this.hd,
+      required this.sd,
+      required this.hq,
+      required this.lq});
+}
 
-  /// Return provider URL of video
-  providerUrl() {
-    return _providerUrl;
-  }
-
-  /// Return thumbnail height of video
-  thumbnailHeight() {
-    return _thumbnailHeight;
-  }
-
-  /// Return thumbnail width of video
-  thumbnailWidth() {
-    return _thumbnailWidth;
-  }
-
-  /// Return thumbnail URL of video
-  thumbnail() {
-    return _thumbnailUrl;
-  }
-
-  /// Return IFrame HTML code of video
-  html() {
-    return _html;
-  }
+class HttpException implements Exception {
+  final String message;
+  HttpException(this.message);
+  @override
+  String toString() => 'HttpException: $message';
 }
